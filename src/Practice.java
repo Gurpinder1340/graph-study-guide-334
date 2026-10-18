@@ -1,6 +1,10 @@
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class Practice {
 
@@ -25,8 +29,33 @@ public class Practice {
    * @return the number of vertices with odd values reachable from the starting vertex
    */
   public static int oddVertices(Vertex<Integer> starting) {
-    return 0;
+   //make an empty "visited" set
+   // walk the graph from starting, filling visited
+   // count the odd ones
+   // return the count
+  
+  Set<Vertex<Integer>> visited = new HashSet<>();
+    return oddVertices(starting, visited);
   }
+
+  private static int oddVertices(Vertex<Integer> v, Set<Vertex<Integer>> visited) {
+    if (v == null || visited.contains(v)) {
+      return 0;
+    }
+    visited.add(v);
+
+    int total = 0;
+    if (v.data % 2 !=0) {
+      total = 1;
+
+    }
+
+    for (Vertex<Integer> n : v.neighbors) {
+      total = total + oddVertices(n, visited);
+    }
+    return total;
+  }
+  
 
   /**
    * Returns a *sorted* list of all values reachable from the starting vertex (including the starting vertex itself).
@@ -47,9 +76,35 @@ public class Practice {
    * @return a sorted list of all reachable vertex values by 
    */
   public static List<Integer> sortedReachable(Vertex<Integer> starting) {
-    return null;
+    List<Integer> result = new ArrayList<>();
+
+    if (starting == null) {
+      return result;
+    }
+
+    Set<Vertex<Integer>> visited = new HashSet<>();
+    collect(starting, visited, result);
+    Collections.sort(result);
+      return result;
   }
 
+     private static void collect(Vertex<Integer> vertex, Set<Vertex<Integer>> visited, List<Integer> result) {
+
+    if (vertex == null || visited.contains(vertex)) {
+        return;
+    }
+
+     visited.add(vertex);
+    result.add(vertex.data);
+
+    for (Vertex<Integer> neighbor : vertex.neighbors) {
+        collect(neighbor, visited, result);
+    }
+}
+
+
+
+ 
   /**
    * Returns a sorted list of all values reachable from the given starting vertex in the provided graph.
    * The graph is represented as a map where each key is a vertex and its corresponding value is a set of neighbors.
