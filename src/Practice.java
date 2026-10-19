@@ -164,8 +164,45 @@ public class Practice {
    * @return true if there is a two-way connection between v1 and v2, false otherwise
    */
   public static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2) {
+   
+  if (v1 == null || v2 == null) {
+        return false;
+    }
+
+    return canReach(v1, v2) && canReach(v2, v1);
+}
+
+private static <T> boolean canReach(
+  Vertex<T> starting, Vertex<T> target) {
+   Set<Vertex<T>> visited = new HashSet<>();
+
+    return canReachHelper(starting, target, visited);
+}
+
+private static <T> boolean canReachHelper(
+        Vertex<T> current, Vertex<T> target,
+        Set<Vertex<T>> visited) {
+
+    if (current == null || visited.contains(current)) {
+        return false;
+    }
+
+    if (current == target) {
+        return true;
+    }
+
+    visited.add(current);
+
+    for (Vertex<T> neighbor : current.neighbors) {
+        if (canReachHelper(neighbor, target, visited)) {
+            return true;
+        }
+    }
+
     return false;
-  }
+}
+
+
 
   /**
    * Returns whether there exists a path from the starting to ending vertex that includes only positive values.
@@ -180,8 +217,51 @@ public class Practice {
    * @return whether there exists a valid positive path from starting to ending
    */
   public static boolean positivePathExists(Map<Integer, Set<Integer>> graph, int starting, int ending) {
+  
+    if (starting <= 0 || ending <= 0) {
+        return false;
+    }
+
+     if (graph == null) {
+        return false;
+    }
+
+    if (!graph.containsKey(starting) || !graph.containsKey(ending)) {
+        return false;
+    }
+
+    Set<Integer> visited = new HashSet<>();
+
+    return positivePathHelper(graph, starting, ending, visited);
+}
+
+private static boolean positivePathHelper(
+        Map<Integer, Set<Integer>> graph,
+        int current, int ending, Set<Integer> visited) {
+
+    if (current <= 0 || visited.contains(current)) {
+        return false;
+    }
+
+    if (current == ending) {
+        return true;
+    }
+
+    visited.add(current);
+
+    for (int neighbor : graph.get(current)) {
+        if (graph.containsKey(neighbor)) {
+            if (positivePathHelper(graph, neighbor, ending, visited)) {
+                return true;
+            }
+        }
+    }
+
     return false;
-  }
+}
+
+
+ 
 
   /**
    * Returns true if a professional has anyone in their extended network (reachable through any number of links)
@@ -193,6 +273,35 @@ public class Practice {
    * @return true if a person in the extended network works at the specified company, false otherwise
    */
   public static boolean hasExtendedConnectionAtCompany(Professional person, String companyName) {
+    Set<Professional> visited = new HashSet<>();
+
+    if (person == null) {
+        return false;
+    }
+ 
+    return companyHelper(person, companyName, visited);
+}
+
+private static boolean companyHelper(
+        Professional person, String companyName,
+        Set<Professional> visited) {
+
+    if (person == null || visited.contains(person)) {
+        return false;
+    }
+
+    visited.add(person);
+
+    if (companyName.equals(person.getCompany())) {
+        return true;
+    }
+
+    for (Professional connection : person.getConnections()) {
+        if (companyHelper(connection, companyName, visited)) {
+            return true;
+        }
+    }
+
     return false;
   }
 
